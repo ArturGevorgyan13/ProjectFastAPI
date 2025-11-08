@@ -1,0 +1,4 @@
+# todo ignore env and cache files from git
+
+myenv
+*/__pycache__
