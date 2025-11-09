@@ -12,9 +12,6 @@ router = APIRouter()
 #THIS FUNCTION GIVES ALL PROJECT DETAILS IN DATABASE
 @router.get("/projects/details")
 async def get_projects_details():
-
-    print("Starting ------------------")
-
     docs = projects_details.find()
 
     details = []
@@ -29,6 +26,8 @@ async def get_projects_details():
 @router.get("/projects/{id}/details")
 async def get_project_details(id: str):
 
+    print(f"This id is passed from user: {id}")
+
     try: 
         obj_id = ObjectId(id)
     except:
@@ -39,7 +38,7 @@ async def get_project_details(id: str):
     if not doc:
         raise HTTPException(status_code=404, detail="id is not found")
     
-    doc["_id"] = str(doc["_id"])
+    doc["_id"] = str(doc["_id"])  
 
     return doc
 
@@ -57,7 +56,7 @@ async def add_project_details(id: str, owner_company: str = None, country: str =
     if not doc:
         raise HTTPException(status_code=404, detail="id is not found")
     
-    new_details =  {}
+    new_details = {}
 
     if owner_company:
         new_details["owner_company"] = owner_company
@@ -133,7 +132,11 @@ async def get_project(id: str):
 async def get_project_by_external_url(external_url: str = Path(..., description="external URL")):
     from urllib.parse import unquote
 
+    print(f"This is quoted url: {external_url}")
+
     u = unquote(external_url)
+
+    print(f"This is unquoted url: {u}")
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
