@@ -12,7 +12,7 @@ router = APIRouter()
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES ALL PROJECT DETAILS IN DATABASE
 @router.get("/projects/details", response_model=List[ProjectDetail])
-async def get_projects_details():
+async def get_projects_details() -> List[ProjectDetail]:
     docs = projects_details.find()
 
     details = []
@@ -26,7 +26,7 @@ async def get_projects_details():
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION FINDS ALL DETAILS OF PROVIDED ID PROJECT
 @router.get("/projects/{id}/details", response_model=ProjectDetail)
-async def get_project_details(id: str):
+async def get_project_details(id: str) -> ProjectDetail:
 
     print(f"This id is passed from user: {id}")
 
@@ -48,7 +48,7 @@ async def get_project_details(id: str):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION ADDS ADDITIONAL DETAILS ABOUT PROJECT PROVIDED BY ID
 @router.post("/projects/{id}/details", response_model=ProjectDetail)
-async def add_project_details(id: str, projectdetail: ProjectDetailCreate):
+async def add_project_details(id: str, projectdetail: ProjectDetailCreate) -> ProjectDetail:
     try:
         obj_id = ObjectId(id)
     except:
@@ -87,7 +87,7 @@ async def add_project_details(id: str, projectdetail: ProjectDetailCreate):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION POSTS PROJECT TO DATABASE AND AUTOMATICALLY POSTS PROJECT'S DETAILS TO APPROPRIATE DATABASE
 @router.post("/projects", response_model=ProjectSchema)
-async def add_project(project: ProjectCreate):
+async def add_project(project: ProjectCreate) -> ProjectSchema:
     doc = project.model_dump()
 
     result = projects_collection.insert_one(doc)
@@ -107,7 +107,7 @@ async def add_project(project: ProjectCreate):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES ALL PROJECTS IN DATABASE
 @router.get("/projects", response_model=List[ProjectSchema])
-async def get_projects():
+async def get_projects() -> List[ProjectSchema]:
     projects = []
 
     for doc in projects_collection.find():
@@ -119,7 +119,7 @@ async def get_projects():
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION FINDS PROJECT BY IT'S ID
 @router.get("/projects/{id}", response_model=ProjectSchema)
-async def get_project(id: str):
+async def get_project(id: str) -> ProjectSchema:
     try:
         obj_id = ObjectId(id)
     except:
@@ -137,7 +137,7 @@ async def get_project(id: str):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES THE INFORMATION FROM EXTRENAL URL
 @router.get("/projects/news/{external_url:path}", response_class=HTMLResponse)
-async def get_project_by_external_url(external_url: str = Path(..., description="external URL")):
+async def get_project_by_external_url(external_url: str = Path(..., description="external URL")) -> HTMLResponse:
     from urllib.parse import unquote
 
     print(f"This is quoted url: {external_url}")
@@ -160,7 +160,7 @@ async def get_project_by_external_url(external_url: str = Path(..., description=
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION EDITS THE PROJECT BY IT'S ID
 @router.put("/projects/{id}", response_model=ProjectSchema)
-async def edit_project(id: str, project: ProjectCreate):
+async def edit_project(id: str, project: ProjectCreate) -> ProjectSchema:
     try:
         obj_id = ObjectId(id)
     except:
@@ -186,7 +186,7 @@ async def edit_project(id: str, project: ProjectCreate):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION DELETES PROJECT FROM DATABASE BY IT'S ID AND DELETES AUTOMATICALLY FROM THE DATABASE CONTAINING IT'S DETAILS
 @router.delete("/projects/{id}", response_model=dict)
-async def delete_project(id: str):
+async def delete_project(id: str) -> dict:
         try:
             obj_id = ObjectId(id)
         except:
