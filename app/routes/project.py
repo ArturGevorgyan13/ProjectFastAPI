@@ -1,5 +1,5 @@
 from app.database import projects_collection, projects_details
-from app.schemas.project import ProjectSchema, ProjectCreate, ProjectDetail
+from app.schemas.project import ProjectSchema, ProjectCreate, ProjectDetail, ProjectDetailCreate
 from fastapi import APIRouter, HTTPException, Path, Response
 from fastapi.responses import RedirectResponse, HTMLResponse
 from datetime import datetime
@@ -48,7 +48,7 @@ async def get_project_details(id: str):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION ADDS ADDITIONAL DETAILS ABOUT PROJECT PROVIDED BY ID
 @router.post("/projects/{id}/details", response_model=ProjectDetail)
-async def add_project_details(id: str, owner_company: str = None, country: str = None):
+async def add_project_details(id: str, projectdetail: ProjectDetailCreate):
     try:
         obj_id = ObjectId(id)
     except:
@@ -61,11 +61,11 @@ async def add_project_details(id: str, owner_company: str = None, country: str =
     
     new_details = {}
 
-    if owner_company:
-        new_details["owner_company"] = owner_company
+    if projectdetail.owner_company:
+        new_details["owner_company"] = projectdetail.owner_company
     
-    if country:
-        new_details["country"] = country
+    if projectdetail.country:
+        new_details["country"] = projectdetail.country
 
     if not new_details:
         raise HTTPException(status_code=400, detail="no fields are mantioned")

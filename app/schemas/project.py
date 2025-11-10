@@ -31,3 +31,9 @@ class ProjectDetail(ProjectDetailBase):
     project_id: str
     owner_company: Optional[str] = None
     country: Optional[str] = None
+
+#-------------------------------------------------------------------------------------------------------------------------------------------
+#THIS IS USED FOR CREATING(POST) NEW DETAILS ABOUT PROJECT
+class ProjectDetailCreate(BaseModel):
+    owner_company: Optional[str] = None
+    country: Optional[str] = None
