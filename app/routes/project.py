@@ -1,16 +1,17 @@
 from app.database import projects_collection, projects_details
-from app.schemas.project import ProjectSchema, ProjectCreate
+from app.schemas.project import ProjectSchema, ProjectCreate, ProjectDetail
 from fastapi import APIRouter, HTTPException, Path, Response
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from datetime import datetime
 from bson import ObjectId
 import httpx
+from typing import List
 
 router = APIRouter()
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES ALL PROJECT DETAILS IN DATABASE
-@router.get("/projects/details")
+@router.get("/projects/details", response_model=List[ProjectDetail])
 async def get_projects_details():
     docs = projects_details.find()
 
@@ -24,7 +25,7 @@ async def get_projects_details():
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION FINDS ALL DETAILS OF PROVIDED ID PROJECT
-@router.get("/projects/{id}/details")
+@router.get("/projects/{id}/details", response_model=ProjectDetail)
 async def get_project_details(id: str):
 
     print(f"This id is passed from user: {id}")
@@ -46,7 +47,7 @@ async def get_project_details(id: str):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION ADDS ADDITIONAL DETAILS ABOUT PROJECT PROVIDED BY ID
-@router.post("/projects/{id}/details")
+@router.post("/projects/{id}/details", response_model=ProjectDetail)
 async def add_project_details(id: str, owner_company: str = None, country: str = None):
     try:
         obj_id = ObjectId(id)
@@ -76,7 +77,12 @@ async def add_project_details(id: str, owner_company: str = None, country: str =
 
     )
 
-    return {"message": "Project details are updated"}
+    new_doc = projects_details.find_one({"project_id": obj_id})
+
+    new_doc["_id"] = str(new_doc["_id"])
+    new_doc["project_id"] = str(new_doc["project_id"])
+
+    return new_doc
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION POSTS PROJECT TO DATABASE AND AUTOMATICALLY POSTS PROJECT'S DETAILS TO APPROPRIATE DATABASE
@@ -100,7 +106,7 @@ async def add_project(project: ProjectCreate):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES ALL PROJECTS IN DATABASE
-@router.get("/projects")
+@router.get("/projects", response_model=List[ProjectSchema])
 async def get_projects():
     projects = []
 
@@ -112,7 +118,7 @@ async def get_projects():
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION FINDS PROJECT BY IT'S ID
-@router.get("/projects/{id}")
+@router.get("/projects/{id}", response_model=ProjectSchema)
 async def get_project(id: str):
     try:
         obj_id = ObjectId(id)
@@ -130,7 +136,7 @@ async def get_project(id: str):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION GIVES THE INFORMATION FROM EXTRENAL URL
-@router.get("/projects/news/{external_url:path}")
+@router.get("/projects/news/{external_url:path}", response_class=HTMLResponse)
 async def get_project_by_external_url(external_url: str = Path(..., description="external URL")):
     from urllib.parse import unquote
 
@@ -153,7 +159,7 @@ async def get_project_by_external_url(external_url: str = Path(..., description=
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION EDITS THE PROJECT BY IT'S ID
-@router.put("/projects/{id}")
+@router.put("/projects/{id}", response_model=ProjectSchema)
 async def edit_project(id: str, project: ProjectCreate):
     try:
         obj_id = ObjectId(id)
@@ -179,7 +185,7 @@ async def edit_project(id: str, project: ProjectCreate):
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS FUNCTION DELETES PROJECT FROM DATABASE BY IT'S ID AND DELETES AUTOMATICALLY FROM THE DATABASE CONTAINING IT'S DETAILS
-@router.delete("/projects/{id}")
+@router.delete("/projects/{id}", response_model=dict)
 async def delete_project(id: str):
         try:
             obj_id = ObjectId(id)

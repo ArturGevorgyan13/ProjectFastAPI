@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #THIS IS MY BASE PROJECT CLASS, EVERY PROJECT MUST CONTAIN THIS AS MINIMAL
@@ -27,9 +28,6 @@ class ProjectDetailBase(BaseModel):
 #THIS IS MY WORKING PROJECT DETAILS CLASS
 class ProjectDetail(ProjectDetailBase):
     id: str = Field(..., alias="_id")
-
-#-------------------------------------------------------------------------------------------------------------------------------------------
-#THIS CLASS IS ABOUT MORE DETAILS ABOUT PROJECT
-class ProjectDetailMore(ProjectDetailBase):
-    owner_company: str
-    country: str
+    project_id: str
+    owner_company: Optional[str] = None
+    country: Optional[str] = None
