@@ -17,6 +17,7 @@ async def get_projects_details():
     details = []
     for doc in docs:
         doc["_id"] = str(doc["_id"])
+        doc["project_id"] = str(doc["project_id"])
         details.append(doc)
 
     return details
@@ -33,12 +34,13 @@ async def get_project_details(id: str):
     except:
         raise HTTPException(status_code=400, detail="invalid id format")
 
-    doc = projects_details.find_one({"_id": obj_id})
+    doc = projects_details.find_one({"project_id": obj_id})
 
     if not doc:
         raise HTTPException(status_code=404, detail="id is not found")
     
     doc["_id"] = str(doc["_id"])  
+    doc["project_id"] = str(doc["project_id"])
 
     return doc
 
@@ -51,7 +53,7 @@ async def add_project_details(id: str, owner_company: str = None, country: str =
     except:
         raise HTTPException(status_code=400, detail="invalid id format")
     
-    doc = projects_details.find_one({"_id": obj_id})
+    doc = projects_details.find_one({"project_id": obj_id})
 
     if not doc:
         raise HTTPException(status_code=404, detail="id is not found")
@@ -69,7 +71,7 @@ async def add_project_details(id: str, owner_company: str = None, country: str =
 
     projects_details.update_one(
 
-        {"_id": obj_id},
+        {"project_id": obj_id},
         {"$set": new_details}
 
     )
@@ -88,7 +90,7 @@ async def add_project(project: ProjectCreate):
 
     doc_details = dict()
 
-    doc_details["_id"] = result.inserted_id
+    doc_details["project_id"] = result.inserted_id
     doc_details["status"] = "active"
     doc_details["created_at"] = datetime.now()
 
@@ -189,6 +191,6 @@ async def delete_project(id: str):
         if doc.deleted_count == 0:
             raise HTTPException(status_code=404, detail="id is not found")
         
-        projects_details.delete_one({"_id": obj_id})
+        projects_details.delete_one({"project_id": obj_id})
 
         return {"message": f"project with id {id} has been deleted"}
