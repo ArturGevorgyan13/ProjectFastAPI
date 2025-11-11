@@ -1,23 +1,24 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
-#THIS IS THE BASE CLASS FOR PROJECT
-class ProjectBase(BaseModel):
-    name: str
-    description: str
+#THIS IS THE BASE CLASS FOR PROJECT DETAIL
+class ProjectDetailBase(BaseModel):
+    status: str
+    owner_company: str
+    country: str
+
 #-------------------------------------------------------------------------------------------------------------------------------------------
-#THIS CLASS IS USED WHEN WE WANT TO EDIT PROJECT
-class ProjectEdit(ProjectBase):
+#THIS CLASS IS USED WHEN WE WANT TO EDIT PROJECT DETAIL
+class ProjectDetailEdit(ProjectDetailBase):
     pass
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
-#THIS CLASS IS USED WHEN WE WANT TO ADD PROJECT
-class ProjectCreate(ProjectBase):
-    pass
+#THIS CLASS IS USED WHEN WE WANT TO ADD PROJECT DETAIL
+class ProjectDetailCreate(ProjectDetailBase):
+    project_id: str
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
-#THIS IS CURRENT WORKING CLASS FOR PROJECT
-class Project(ProjectBase):
+#THIS IS CURRENT WORKING CLASS FOR PROJECT DETAIL
+class ProjectDetail(ProjectDetailBase):
     id: str = Field(..., alias="_id")
-    created_at: datetime
+    project_id: str
